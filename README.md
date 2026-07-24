@@ -1,161 +1,199 @@
+# DP-GCViT: Dual-Path Global Context Vision Transformer for Fine-Grained Pet Breed Recognition
 
+A fine-grained visual classification (FGVC) framework for dog and cat breed recognition based on a **Global Context Vision Transformer (GCViT-Tiny)** with a **Dual-Path architecture** and a **parameter-free adaptive confidence-based fusion mechanism**.
 
-A fine-grained image classification project for dog and cat breed recognition using a GCViT-Tiny backbone with a dual-path gated fusion architecture.
-
-This work focuses on improving breed classification performance by combining:
-
-* Global feature representation
-* Part-aware local feature extraction
-* Adaptive gated feature fusion
+The proposed **DP-GCViT** enhances breed recognition by combining complementary global and local visual representations through confidence-based prediction fusion while maintaining a lightweight architecture without auxiliary localization networks or saliency detection modules.
 
 ---
 
 # Overview
 
-Fine-grained visual classification (FGVC) is challenging because many breeds have very subtle visual differences while showing large intra-class variations.
+Fine-grained visual classification (FGVC) is a challenging computer vision task because different breeds often exhibit subtle inter-class differences while simultaneously presenting large intra-class variations caused by pose, illumination, occlusion, background clutter, and appearance diversity.
 
-To address this problem, this project introduces a hybrid architecture built on GCViT-Tiny that extracts both:
+To address these challenges, **DP-GCViT** extends the GCViT-Tiny backbone by introducing two complementary prediction branches:
 
-* Global semantic features
-* Local discriminative part features
+- **Global Path**, capturing holistic semantic information using Global Average Pooling.
+- **Local Salient Path**, emphasizing highly discriminative local regions through Global Max Pooling.
 
-A gating mechanism dynamically fuses these representations for better breed prediction performance.
+Instead of relying on explicit part localization, saliency estimation, or attention-guided cropping, the proposed framework employs a **parameter-free adaptive confidence-based fusion mechanism**, which dynamically combines the predictions of the two branches according to their confidence scores.
 
 ---
 
 # Architecture
 
 ```text
-Input Image
-      │
-      ▼
-Pre-Processing
-      │
-      ▼
-GCViT-Tiny Backbone
-      │
-      ▼
-Feature Token Map
-      │
- ┌────┴────┐
- ▼         ▼
-Mean Pool  Max Pool
-(Global)   (Part)
- │           │
- ▼           ▼
-Global      Part
-Feature     Feature
- │           │
-Global FC   Part FC
- └────┬─────┘
-      ▼
-Shared Projection Layer
-      │
-      ▼
-Gating Mechanism (α)
-      │
-      ▼
-Gated Fusion
-      │
-      ▼
-Breed Prediction
+                    Input Image
+                         │
+                         ▼
+                  Image Pre-processing
+                         │
+                         ▼
+                GCViT-Tiny Backbone
+                         │
+                         ▼
+                Shared Feature Map
+                  ┌──────────────┐
+                  │              │
+                  ▼              ▼
+         Global Average Pool   Global Max Pool
+          (Global Path)      (Local Salient Path)
+                  │              │
+                  ▼              ▼
+           Global Feature    Local Feature
+                  │              │
+                  ▼              ▼
+          Global Classifier  Local Classifier
+                  │              │
+                  └──────┬───────┘
+                         ▼
+           Adaptive Confidence Computation
+                         │
+                         ▼
+      Parameter-Free Confidence-Based Fusion
+                         │
+                         ▼
+                Final Breed Prediction
 ```
 
 ---
 
 # Key Features
 
-* GCViT-Tiny transformer backbone
-* Dual-branch feature extraction
-* Global + part-aware representation learning
-* Adaptive gated fusion mechanism
-* Fine-grained breed classification
-* Early stopping support
-* Training visualization
-* Confusion matrix analysis
-* Google Colab compatible
+- GCViT-Tiny transformer backbone
+- Dual-path feature learning
+- Global semantic representation
+- Local salient feature representation
+- Parameter-free adaptive confidence-based fusion
+- End-to-end fine-grained breed classification
+- Lightweight architecture without auxiliary localization networks
+- Extensive evaluation on multiple FGVC benchmarks
+- Grad-CAM visualization for model interpretability
+- Fully reproducible PyTorch implementation
 
 ---
 
-# Dataset
+# Datasets
 
 ## Oxford-IIIT Pet Dataset
 
-### Dataset Details
+- **37** pet breeds
+- **25** dog breeds
+- **12** cat breeds
+- **7,349** RGB images
 
-* 37 total breeds
-* 25 dog breeds
-* 12 cat breeds
-* Around 200 images per breed
+## Stanford Dogs Dataset
+
+- **120** dog breeds
+- **20,580** RGB images
 
 ---
 
 # Technologies Used
 
-* Python
-* PyTorch
-* timm
-* NumPy
-* Matplotlib
-* Scikit-learn
-* OpenCV
-* Google Colab
+- Python
+- PyTorch
+- timm
+- torchvision
+- NumPy
+- OpenCV
+- Matplotlib
+- Scikit-learn
+- Google Colab
 
 ---
 
 # Evaluation Metrics
 
-The model is evaluated using:
+The proposed model is evaluated using:
 
-* Accuracy
-* Precision
-* Recall
-* F1-score
-* Confusion Matrix
-* Per-class accuracy
+- Top-1 Accuracy
+- Top-5 Accuracy
+- Precision
+- Recall
+- F1-score
+- Confusion Matrix
+- ROC Curve
+- Area Under the Curve (AUC)
+- Per-class Performance Analysis
 
 ---
 
-# Results
+# Experimental Results
 
-| Model                     | Dataset         | Accuracy |
-| ------------------------- | --------------- | -------- |
-| GCViT-Tiny + Gated Fusion | Oxford-IIIT Pet | 94.47%   |
+| Model | Dataset | Test Accuracy |
+|-------|---------|--------------:|
+| **DP-GCViT** | Oxford-IIIT Pet | **95.26%** |
+| **DP-GCViT** | Stanford Dogs | **93.25%** |
+
+The proposed **DP-GCViT** achieves state-of-the-art performance while maintaining a lightweight architecture without requiring explicit part localization, saliency detection, multi-view cropping, or auxiliary attention modules.
 
 ---
 
 # Visualizations
 
-The project includes:
+The repository includes:
 
-* Accuracy vs Epoch curves
-* Loss vs Epoch curves
-* Confusion matrices
-* Best & worst classified breeds analysis
+- Training and validation accuracy curves
+- Training and validation loss curves
+- Confusion matrices
+- ROC curves
+- Grad-CAM visualizations
+- Best and worst classified breed analysis
+- Comparative model performance analysis
 
 ---
 
 # Future Work
 
-* Attention map visualization
-* Grad-CAM explainability
-* Multi-scale feature fusion
-* Ensemble learning
-* Comparison with ViT and Swin Transformer
+Future research directions include:
+
+- Controllable generative AI for attribute-aware data augmentation
+- Privacy-preserving edge deployment through model quantization and pruning
+- Multi-scale feature learning
+- Lightweight model compression
+- Real-time mobile deployment
+- Extension to broader fine-grained visual recognition tasks
+
+---
+
+# Citation
+
+If you use this work, please cite:
+
+```bibtex
+@article{hera2026dpgcvit,
+  title={DP-GCViT: Dual-Path Global Context Vision Transformer for Fine-Grained Pet Breed Recognition},
+  author={Mowmita Parvin Hera and others},
+  journal={Under Review},
+  year={2026}
+}
+```
 
 ---
 
 # Acknowledgements
 
-* GCViT authors
-* Oxford-IIIT Pet Dataset creators
-* PyTorch community
-* timm library contributors
+We gratefully acknowledge:
+
+- GCViT authors
+- Oxford-IIIT Pet Dataset creators
+- Stanford Dogs Dataset creators
+- PyTorch community
+- timm library contributors
 
 ---
 
 # Author
 
 **Mowmita Parvin Hera**
-B.Sc. in Mathematics
+
+B.Sc. in Mathematics  
 Jashore University of Science and Technology (JUST)
+
+**Research Interests**
+
+- Computer Vision
+- Deep Learning
+- Fine-Grained Visual Classification
+- Vision Transformers
+- Explainable AI
